@@ -1,0 +1,135 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2024 Benjamin Thomas Schwertfeger
+# GitHub: https://github.com/btschwertfeger
+#
+
+services:
+  dbexporter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      mosquitto-server:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
+    environment:
+      TZ: Europe/Berlin
+      # InfluxDB settings
+      INFLUXDB_HOST: ${INFLUXDB_HOST}
+      INFLUXDB_USERNAME: ${INFLUXDB_USERNAME}
+      INFLUXDB_PASSWORD: ${INFLUXDB_PASSWORD}
+      INFLUXDB_DATABASE: ${INFLUXDB_DATABASE}
+      INFLUXDB_TOKEN: ${INFLUXDB_TOKEN}
+      INFLUXDB_ORG: ${INFLUXDB_ORG}
+      # MQTT settings
+      MQTT_HOST: ${MQTT_HOST}
+      MQTT_USERNAME: ${MQTT_USERNAME}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+    healthcheck:
+      test:
+        ["CMD", "ps", "aux", "|", "grep", "[d]bexporter.py", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: always
+    networks:
+      - smart_home_network
+
+  mosquitto-server:
+    image: eclipse-mosquitto:2.0.20
+    environment:
+      TZ: Europe/Berlin
+    ports:
+      - 1883:1883
+      - 9001:9001
+    volumes:
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+      - ${PWD}/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    restart: always
+    networks:
+      - smart_home_network
+    secrets:
+      - mqtt_passwd_file
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mosquitto_pub",
+          "-h",
+          "localhost",
+          "-t",
+          "healthcheck",
+          "-m",
+          "ping",
+          "-u",
+          "${MQTT_USERNAME}",
+          "-P",
+          "${MQTT_PASSWORD}",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+
+  influxdb:
+    image: influxdb:2.7.11
+    ports:
+      - 8086:8086
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    environment:
+      TZ: Europe/Berlin
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_DATABASE}
+      DOCKER_INFLUXDB_INIT_RETENTION: 365d
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
+      # DOCKER_INFLUXDB_HTTP_LOG_ENABLED: true
+      DOCKER_INFLUXDB_LOGGING_LEVEL: warning
+    restart: always
+    networks:
+      - smart_home_network
+    healthcheck:
+      test: ["CMD-SHELL", "influx ping -host http://localhost:8086 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      TZ: Europe/Berlin
+    networks:
+      - smart_home_network
+
+volumes:
+  mosquitto_data:
+    external: false
+  mosquitto_log:
+    external: false
+  influxdb_data:
+    external: false
+  grafana_data:
+    external: false
+
+networks:
+  smart_home_network:
+    driver: bridge
+
+secrets:
+  mqtt_passwd_file:
+    file: ./mosquitto/passwd_file

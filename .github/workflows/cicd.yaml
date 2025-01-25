@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2023 Benjamin Thomas Schwertfeger
+# GitHub: https://github.com/btschwertfeger
+#
+
+name: CI/CD
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: "20 16 */7 * *"
+  release:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: ["**"]
+
+# Only run once due to API rate limits
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  Pre-Commit:
+    uses: ./.github/workflows/_pre_commit.yaml
+
+  Build-Docker:
+    uses: ./.github/workflows/_build_docker.yaml
