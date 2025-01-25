@@ -82,7 +82,7 @@ def _parse_mqtt_message(topic: str, payload: str) -> Generator:
         location = match.group(1)
         measurement = match.group(2)
 
-        if measurement == "status":
+        if measurement == "status":  # noqa: PLR2004
             LOG.info("Ignoring status message")
             return None  # noqa: B901
 
