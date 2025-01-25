@@ -35,7 +35,7 @@ services:
       start_period: 10s
     restart: always
     networks:
-      - smart_home_network
+      - tasmota_plug_monitoring_network
 
   mosquitto-server:
     image: eclipse-mosquitto:2.0.20
@@ -50,7 +50,7 @@ services:
       - ${PWD}/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
     restart: always
     networks:
-      - smart_home_network
+      - tasmota_plug_monitoring_network
     secrets:
       - mqtt_passwd_file
     healthcheck:
@@ -92,7 +92,7 @@ services:
       DOCKER_INFLUXDB_LOGGING_LEVEL: warning
     restart: always
     networks:
-      - smart_home_network
+      - tasmota_plug_monitoring_network
     healthcheck:
       test: ["CMD-SHELL", "influx ping -host http://localhost:8086 || exit 1"]
       interval: 15s
@@ -114,7 +114,7 @@ services:
     environment:
       TZ: Europe/Berlin
     networks:
-      - smart_home_network
+      - tasmota_plug_monitoring_network
 
 volumes:
   mosquitto_data:
@@ -127,7 +127,7 @@ volumes:
     external: false
 
 networks:
-  smart_home_network:
+  tasmota_plug_monitoring_network:
     driver: bridge
 
 secrets:
