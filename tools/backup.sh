@@ -8,10 +8,11 @@
 echo "Starting backup process..."
 
 # Configuration
-VOLUMES=("smart-home_grafana_data" "smart-home_influxdb_data")
+VOLUMES=("tasmota-plug-monitoring_grafana_data" "tasmota-plug-monitoring_influxdb_data")
 BACKUP_DIR="/data/backups"  # Directory where backups will be stored
 TIMESTAMP=$(date +"%Y%m%d%H%M%S")  # Timestamp format (e.g., 20231225123045)
-BASE_DIR=/home/ubuntu/src/smart-home
+# Change this to the directory where this script is located:
+BASE_DIR=/home/ubuntu/src/tasmota-plug-monitoring
 
 mkdir -p ${BACKUP_DIR}
 
