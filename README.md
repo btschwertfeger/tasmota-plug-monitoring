@@ -3,8 +3,6 @@
 This repository contains the necessary knowledge and resources to setup and
 monitor Tasmota plugs using InfluxDB, Grafana, and MQTT.
 
-
-
 The setup consists of the following components:
 
 - [InfluxDB](https://www.influxdata.com/products/influxdb-overview/) as a time
@@ -23,9 +21,9 @@ in the visualization.
   <figure>
     <img
     src="resources/dashboard.png?raw=true"
-    alt="Grafana dashboard of data collected"
+    alt="Grafana dashboard of collected data"
     style="background-color: white; border-radius: 7px">
-    <figcaption>Grafana dashboard of data collected</figcaption>
+    <figcaption>Grafana dashboard of collected data</figcaption>
   </figure>
 </div>
 
@@ -40,7 +38,7 @@ in the visualization.
 1. Connect the Tasmota plug(s) to your network by following the instructions
    provided by the manufacturer. You can find the IP address of the plug by
    checking the DHCP leases of your router. You may also want to assign a static
-    IP address to the plug(s).
+   IP address to the plug(s).
 2. Install the latest version of Tasmota on your devices.
 3. Create a password file for mosquitto by running the official docker image to
    leverage the `mosquitto_passwd` command.
@@ -57,6 +55,7 @@ in the visualization.
 
    Copy the content of the `passwd_file` into the `mosquitto/passwd_file` on
    your host system.
+
 4. Update the Mosquitto configuration file `mosquitto/mosquitto.conf` with the
    correct path to the `passwd_file`. You may want to configure more in there.
 5. Run the docker-compose file to start the services, but first, ensure that the
@@ -90,6 +89,7 @@ in the visualization.
    ```bash
    docker compose up
    ```
+
 6. Open the InfluxDB UI at http://192.168.2.141:8086/, login using the
    credentials and create a new API token at "Load Data" -> "API Tokens".
 7. Stop the docker-compose services and update the `INFLUXDB_TOKEN` with the
