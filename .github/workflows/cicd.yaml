@@ -16,7 +16,6 @@ on:
     types: [opened, synchronize, reopened]
     branches: ["**"]
 
-# Only run once due to API rate limits
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
