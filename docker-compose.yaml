@@ -28,7 +28,7 @@ services:
       MQTT_PASSWORD: ${MQTT_PASSWORD}
     healthcheck:
       test:
-        ["CMD", "ps", "aux", "|", "grep", "[d]bexporter.py", "||", "exit", "1"]
+        ["CMD-SHELL", "ps aux | grep dbexporter.py | grep -v grep || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
