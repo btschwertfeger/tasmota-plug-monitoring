@@ -166,7 +166,7 @@
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "query": "from(bucket: \"smart_home\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Today\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> last() \n  |> map(fn: (r) => ({ r with _value: r._value * 0.2644}))\n  |> group()\n  |> keep(columns: [\"_value\", \"location\"])\n  |> rename(columns: { \"_value\": \"Cost\", \"location\": \"Device\"})",
+          "query": "price_per_kWh = 0.2664\n\nfrom(bucket: \"smart_home\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Today\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> last() \n  |> map(fn: (r) => ({ r with _value: r._value * price_per_kWh}))\n  |> group()\n  |> keep(columns: [\"_value\", \"location\"])\n  |> rename(columns: { \"_value\": \"Cost\", \"location\": \"Device\"})",
           "refId": "A"
         }
       ],
@@ -407,7 +407,7 @@
       "pluginVersion": "11.4.0",
       "targets": [
         {
-          "query": "from(bucket: \"smart_home\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Total\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> last() \n  |> map(fn: (r) => ({ r with _value: r._value * 0.2644}))\n  |> group()\n  |> keep(columns: [\"_value\", \"location\"])\n  |> rename(columns: { \"_value\": \"Cost\", \"location\": \"Device\"})",
+          "query": "price_per_kWh = 0.2644\n\nfrom(bucket: \"smart_home\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"Total\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> last() \n  |> map(fn: (r) => ({ r with _value: r._value * price_per_kWh}))\n  |> group()\n  |> keep(columns: [\"_value\", \"location\"])\n  |> rename(columns: { \"_value\": \"Cost\", \"location\": \"Device\"})",
           "refId": "A"
         }
       ],
@@ -937,13 +937,13 @@
     "list": []
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Smart Home",
   "uid": "be7p0qm7ihx4wd",
-  "version": 34,
+  "version": 37,
   "weekStart": ""
 }

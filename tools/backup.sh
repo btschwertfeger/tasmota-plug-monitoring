@@ -3,7 +3,10 @@
 # Copyright (C) 2024 Benjamin Thomas Schwertfeger
 # GitHub: https://github.com/btschwertfeger
 #
-# ... put this into crontab
+# A simple script to backup Docker volumes for the Tasmota Plug Monitoring
+# project.
+# 1. Check and update paths if necessary
+# 2. Execute this script in crontab
 
 echo "Starting backup process..."
 

@@ -116,12 +116,23 @@ in the visualization.
    the Tasmota console ("Tools" -> "Console"). This will ensure that the metrics
    are updated every 10 seconds.
 9. Login to the Grafana web UI at http://192.168.2.141:3000/ using the default
-   credentials `admin` and `admin`. You can change the password in the
-   settings. Add the InfluxDB as a data source at "Connections" -> "Data
-   Sources".
+   credentials `admin` and `admin`.
+
+   9.1 Add the InfluxDB as a data source at "Connections" -> "Data Sources".
+
+   9.2 Set the query language to "Flux"
+
+   9.3 Enter the correct IP and port to access the InfluxDB.
+
+   9.4 Enter the "organization" and "token" to the values defined earlier.
+
 10. Now its time to import the Dashboard provided in this repository via
     copy-pasting the content of the `grafana/dashboard.json` file into the
     "Dashboards" -> "New" -> "Import" section of the Grafana UI.
+
+    Note: You may need to click through each panel, select your InfluxDB
+    data source, and hit "Refresh".
+
 11. You may have to adjust the `price_per_kWh` variable in some of the panels to
     match your electricity price.
 
