@@ -28,9 +28,22 @@ INFLUXDB_TOKEN = os.getenv("INFLUXDB_TOKEN")
 INFLUXDB_BUCKET = os.getenv("INFLUXDB_DATABASE")
 INFLUXDB_ORG = os.getenv("INFLUXDB_ORG")
 
+if not all((INFLUXDB_URL, INFLUXDB_TOKEN, INFLUXDB_ORG, INFLUXDB_ORG)):
+    raise ValueError(
+        "The environment variables INFLUXDB_URL, INFLUXDB_TOKEN, INFLUXDB_ORG,"
+        " and INFLUXDB_ORG must be set.",
+    )
+
 MQTT_ADDRESS = os.getenv("MQTT_HOST")
 MQTT_USERNAME = os.getenv("MQTT_USERNAME")
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
+
+if not all((MQTT_ADDRESS, MQTT_USERNAME, MQTT_PASSWORD)):
+    raise ValueError(
+        "The environment variables MQTT_ADDRESS, MQTT_USERNAME, and"
+        " MQTT_PASSWORD must be set.",
+    )
+
 MQTT_TOPIC = "tele/+/SENSOR"
 MQTT_REGEX = "tele/([^/]+)/([^/]+)"
 MQTT_CLIENT_ID = "MQTT_InfluxDB_Bridge"

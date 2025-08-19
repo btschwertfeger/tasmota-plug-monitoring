@@ -3,15 +3,17 @@
 # GitHub: https://github.com/btschwertfeger
 #
 
+name: tasmota-plug-monitoring
+
 services:
   dbexporter:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      mosquitto-server:
-        condition: service_healthy
       influxdb:
+        condition: service_healthy
+      mosquitto-server:
         condition: service_healthy
     environment:
       TZ: Europe/Berlin
@@ -26,6 +28,9 @@ services:
       MQTT_HOST: ${MQTT_HOST}
       MQTT_USERNAME: ${MQTT_USERNAME}
       MQTT_PASSWORD: ${MQTT_PASSWORD}
+    networks:
+      - tasmota_plug_monitoring_network
+    restart: always
     healthcheck:
       test:
         ["CMD-SHELL", "ps aux | grep dbexporter.py | grep -v grep || exit 1"]
@@ -33,26 +38,66 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
-    restart: always
-    networks:
-      - tasmota_plug_monitoring_network
 
-  mosquitto-server:
-    image: eclipse-mosquitto:2.0.20
+  grafana:
+    image: grafana/grafana:11.4.0
+    volumes:
+      - grafana_data:/var/lib/grafana
     environment:
       TZ: Europe/Berlin
     ports:
-      - 1883:1883
-      - 9001:9001
+      - "0.0.0.0:3000:3000"
+    networks:
+      - tasmota_plug_monitoring_network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  influxdb:
+    image: influxdb:2.7.11
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    environment:
+      TZ: Europe/Berlin
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD}
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_DATABASE}
+      DOCKER_INFLUXDB_INIT_RETENTION: 365d
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
+      # DOCKER_INFLUXDB_HTTP_LOG_ENABLED: true
+      DOCKER_INFLUXDB_LOGGING_LEVEL: warning
+    ports:
+      - "0.0.0.0:8086:8086"
+    networks:
+      - tasmota_plug_monitoring_network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "influx ping -host http://localhost:8086 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+
+  mosquitto-server:
+    image: eclipse-mosquitto:2.0.20
     volumes:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
-      - ${PWD}/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-    restart: always
-    networks:
-      - tasmota_plug_monitoring_network
+      - ${PWD}/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
     secrets:
       - mqtt_passwd_file
+    environment:
+      TZ: Europe/Berlin
+    ports:
+      - "0.0.0.0:1883:1883"
+      - "0.0.0.0:9001:9001"
+    networks:
+      - tasmota_plug_monitoring_network
+    restart: always
     healthcheck:
       test:
         [
@@ -73,48 +118,9 @@ services:
       timeout: 10s
       retries: 3
 
-  influxdb:
-    image: influxdb:2.7.11
-    ports:
-      - 8086:8086
-    volumes:
-      - influxdb_data:/var/lib/influxdb2
-    environment:
-      TZ: Europe/Berlin
-      DOCKER_INFLUXDB_INIT_MODE: setup
-      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USERNAME}
-      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD}
-      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
-      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_DATABASE}
-      DOCKER_INFLUXDB_INIT_RETENTION: 365d
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
-      # DOCKER_INFLUXDB_HTTP_LOG_ENABLED: true
-      DOCKER_INFLUXDB_LOGGING_LEVEL: warning
-    restart: always
-    networks:
-      - tasmota_plug_monitoring_network
-    healthcheck:
-      test: ["CMD-SHELL", "influx ping -host http://localhost:8086 || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 3
-
-  grafana:
-    image: grafana/grafana:11.4.0
-    ports:
-      - 3000:3000
-    volumes:
-      - grafana_data:/var/lib/grafana
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    environment:
-      TZ: Europe/Berlin
-    networks:
-      - tasmota_plug_monitoring_network
+networks:
+  tasmota_plug_monitoring_network:
+    driver: bridge
 
 volumes:
   mosquitto_data:
@@ -125,10 +131,6 @@ volumes:
     external: false
   grafana_data:
     external: false
-
-networks:
-  tasmota_plug_monitoring_network:
-    driver: bridge
 
 secrets:
   mqtt_passwd_file:
