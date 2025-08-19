@@ -4,6 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 COPY dbexporter.py /app/dbexporter.py
 
+# hadolint ignore=DL3008,DL3013
 RUN --mount=type=cache,target=/var/lib/apt/,sharing=locked \
     --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=tmpfs,target=/var/log/apt/ \
@@ -20,6 +21,6 @@ RUN --mount=type=cache,target=/var/lib/apt/,sharing=locked \
         procps \
     && locale-gen en_US.UTF.8 \
     && rm -rf /var/lib/apt/lists/* \
-    && python -m pip install --compile paho-mqtt influxdb-client
+    && python -m pip install --no-cache-dir --compile paho-mqtt influxdb-client
 
 ENTRYPOINT ["python", "/app/dbexporter.py"]

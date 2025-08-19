@@ -42,7 +42,7 @@ in the visualization.
    a static IP address to the plug(s).
 2. Install the latest version of Tasmota on your devices.
 3. Create a password file for mosquitto by running the official docker image to
-   leverage the `mosquitto_passwd` command.
+   execute the `mosquitto_passwd` command.
 
    ```bash
    docker run -it eclipse-mosquitto:latest sh
@@ -54,11 +54,12 @@ in the visualization.
    mqtt_user:................
    ```
 
-   Copy the content of `passwd_file` into `mosquitto/passwd_file` on your host
+   Copy the content of `passwd_file` into `./mosquitto/passwd_file` on your host
    system.
 
-   (Do **not** change the path to `passwd_file` file within
-   `mosquitto/mosquitto.conf`!)
+   Do **not** change the path to `passwd_file` file within
+   `./mosquitto/mosquitto.conf`. This file must be present in the working
+   directory in which docker is run later on.
 
 4. Run the docker-compose file to start the services, but first, ensure that the
    required environment variables are set.
