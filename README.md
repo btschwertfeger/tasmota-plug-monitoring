@@ -148,3 +148,8 @@ in the visualization.
   systems as well.
 - For any questions, issues, or feature requests please open an issue in this
   repository.
+- In case the device don't auto-popup the config page when connecting with the
+  Smart Plugs' Hotspot, you can enter the page via http://192.168.4.1.
+- Resetting the WLAN settings for Tasmota Smart Plugs can be done by pressing
+  the button 6 times (tested with Tasmota >= v15). Sometimes it needs a few
+  tries.

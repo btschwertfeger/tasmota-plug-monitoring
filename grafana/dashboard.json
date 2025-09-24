@@ -24,7 +24,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "fe7p0hfgoi4n4b"
+        "uid": "deukkjk5dcjr4e"
       },
       "fieldConfig": {
         "defaults": {
@@ -115,7 +115,8 @@
     },
     {
       "datasource": {
-        "uid": "fe7p0hfgoi4n4b"
+        "type": "influxdb",
+        "uid": "deukkjk5dcjr4e"
       },
       "fieldConfig": {
         "defaults": {
@@ -192,7 +193,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "fe7p0hfgoi4n4b"
+        "uid": "deukkjk5dcjr4e"
       },
       "fieldConfig": {
         "defaults": {
@@ -269,7 +270,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "fe7p0hfgoi4n4b"
+        "uid": "deukkjk5dcjr4e"
       },
       "description": "Factor value",
       "fieldConfig": {
@@ -359,7 +360,8 @@
     },
     {
       "datasource": {
-        "uid": "fe7p0hfgoi4n4b"
+        "type": "influxdb",
+        "uid": "deukkjk5dcjr4e"
       },
       "fieldConfig": {
         "defaults": {
@@ -431,7 +433,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "fe7p0hfgoi4n4b"
+        "uid": "deukkjk5dcjr4e"
       },
       "fieldConfig": {
         "defaults": {
@@ -507,7 +509,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "fe7p0hfgoi4n4b"
+        "uid": "deukkjk5dcjr4e"
       },
       "fieldConfig": {
         "defaults": {
@@ -605,7 +607,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "fe7p0hfgoi4n4b"
+        "uid": "deukkjk5dcjr4e"
       },
       "fieldConfig": {
         "defaults": {
@@ -692,7 +694,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "fe7p0hfgoi4n4b"
+        "uid": "deukkjk5dcjr4e"
       },
       "fieldConfig": {
         "defaults": {
@@ -766,7 +768,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "fe7p0hfgoi4n4b"
+        "uid": "deukkjk5dcjr4e"
       },
       "fieldConfig": {
         "defaults": {
@@ -840,7 +842,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "fe7p0hfgoi4n4b"
+        "uid": "deukkjk5dcjr4e"
       },
       "fieldConfig": {
         "defaults": {
@@ -932,7 +934,7 @@
   "preload": false,
   "refresh": "10s",
   "schemaVersion": 40,
-  "tags": [],
+  "tags": ["Tasmota"],
   "templating": {
     "list": []
   },
@@ -944,6 +946,6 @@
   "timezone": "browser",
   "title": "Smart Home",
   "uid": "be7p0qm7ihx4wd",
-  "version": 37,
+  "version": 38,
   "weekStart": ""
 }
