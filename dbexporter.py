@@ -4,7 +4,7 @@
 # GitHub: https://github.com/btschwertfeger
 #
 
-""" MQTT to InfluxDB (version 2.7.11) bridge """
+"""MQTT to InfluxDB (version 2.7.11) bridge"""
 
 import json
 import os
