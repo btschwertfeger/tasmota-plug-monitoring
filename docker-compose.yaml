@@ -40,7 +40,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:11.4.0
+    image: grafana/grafana:12.4
     volumes:
       - grafana_data:/var/lib/grafana
     environment:
@@ -57,7 +57,7 @@ services:
       retries: 3
 
   influxdb:
-    image: influxdb:2.7.11
+    image: influxdb:2.9.1
     volumes:
       - influxdb_data:/var/lib/influxdb2
     environment:
@@ -83,7 +83,7 @@ services:
       retries: 3
 
   mosquitto-server:
-    image: eclipse-mosquitto:2.0.20
+    image: eclipse-mosquitto:2.1.2-alpine
     volumes:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
