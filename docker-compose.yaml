@@ -17,15 +17,16 @@ services:
         condition: service_healthy
     environment:
       TZ: Europe/Berlin
-      # InfluxDB settings
-      INFLUXDB_HOST: ${INFLUXDB_HOST}
+      # InfluxDB settings. Addressed over the compose network, so InfluxDB needs
+      # no published port.
+      INFLUXDB_HOST: http://influxdb:8086/
       INFLUXDB_USERNAME: ${INFLUXDB_USERNAME}
       INFLUXDB_PASSWORD: ${INFLUXDB_PASSWORD}
       INFLUXDB_DATABASE: ${INFLUXDB_DATABASE}
       INFLUXDB_TOKEN: ${INFLUXDB_TOKEN}
       INFLUXDB_ORG: ${INFLUXDB_ORG}
       # MQTT settings
-      MQTT_HOST: ${MQTT_HOST}
+      MQTT_HOST: mosquitto-server
       MQTT_USERNAME: ${MQTT_USERNAME}
       MQTT_PASSWORD: ${MQTT_PASSWORD}
     networks:
@@ -71,8 +72,11 @@ services:
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN}
       # DOCKER_INFLUXDB_HTTP_LOG_ENABLED: true
       DOCKER_INFLUXDB_LOGGING_LEVEL: warning
-    ports:
-      - "0.0.0.0:8086:8086"
+    # Reached only over the compose network, by dbexporter and by Grafana's
+    # influxdb datasource. Publish this to open the InfluxDB web UI on 8086 when
+    # a token or bucket needs changing by hand.
+    # ports:
+    #   - "0.0.0.0:8086:8086"
     networks:
       - tasmota_plug_monitoring_network
     restart: always
@@ -86,18 +90,22 @@ services:
     image: eclipse-mosquitto:2.1.2-alpine
     volumes:
       - mosquitto_data:/mosquitto/data
-      - mosquitto_log:/mosquitto/log
       - ${PWD}/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
     secrets:
       - mqtt_passwd_file
     environment:
       TZ: Europe/Berlin
+    # The plugs are LAN devices and cannot reach the compose network, so 1883
+    # has to be published. It is the only published port here besides Grafana,
+    # which is why the broker requires authentication.
     ports:
       - "0.0.0.0:1883:1883"
-      - "0.0.0.0:9001:9001"
     networks:
       - tasmota_plug_monitoring_network
     restart: always
+    # Mosquitto logs a connect and a disconnect per probe, so the interval sets
+    # the log volume. At 60s the plugs' own connects stay visible without the
+    # probe drowning them.
     healthcheck:
       test:
         [
@@ -114,9 +122,15 @@ services:
           "-P",
           "${MQTT_PASSWORD}",
         ]
-      interval: 15s
+      interval: 60s
       timeout: 10s
       retries: 3
+    # Mosquitto logs to stdout only, so Docker owns the log and this bounds it.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   tasmota_plug_monitoring_network:
@@ -124,8 +138,6 @@ networks:
 
 volumes:
   mosquitto_data:
-    external: false
-  mosquitto_log:
     external: false
   influxdb_data:
     external: false
