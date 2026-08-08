@@ -32,7 +32,7 @@ in the visualization.
 
 - Docker
 - Docker Compose
-- Tasmota plug(s), e.g. https://www.amazon.de/dp/B0CHMMKZCQ
+- Tasmota plug(s)
 
 ## Setup and Configuration
 
@@ -76,7 +76,6 @@ in the visualization.
 
    ```bash
    # InfluxDB
-   export INFLUXDB_HOST="http://192.168.2.141:8086"
    export INFLUXDB_USERNAME="influxdb_user"
    export INFLUXDB_PASSWORD="influxdb_password"
    export INFLUXDB_DATABASE="smart_home"
@@ -84,7 +83,6 @@ in the visualization.
    export INFLUXDB_TOKEN="You have to create a token in the influxdb IU"
 
    # MQTT
-   export MQTT_HOST="192.168.2.141"
    export MQTT_USERNAME="mqtt_user"
    export MQTT_PASSWORD="${INFLUXDB_PASSWORD}"
    ```
@@ -93,8 +91,11 @@ in the visualization.
    docker compose up
    ```
 
-5. Open the InfluxDB web UI at http://192.168.2.141:8086/, login using the
-   credentials and create a new API token at "Load Data" -> "API Tokens".
+5. Uncomment the `ports` block on the `influxdb` service, run
+   `docker compose up -d influxdb`, then open the InfluxDB web UI at
+   http://192.168.2.141:8086/, login using the credentials and create a new API
+   token at "Load Data" -> "API Tokens". Comment the block back out once the
+   token is in place.
 6. Stop the services started using Docker Compose and update the
    `INFLUXDB_TOKEN` with the newly created token.
 
@@ -123,7 +124,9 @@ in the visualization.
 
    9.2 Set the query language to "Flux"
 
-   9.3 Enter the correct IP and port to access the InfluxDB.
+   9.3 Set the URL to `http://influxdb:8086`. Grafana queries the datasource
+   from its backend, which sits on the compose network, so the service name
+   resolves and InfluxDB needs no published port.
 
    9.4 Enter the "organization" and "token" to the values defined earlier.
 
