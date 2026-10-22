@@ -41,7 +41,7 @@ services:
       start_period: 10s
 
   grafana:
-    image: grafana/grafana:12.4
+    image: grafana/grafana:13.2
     volumes:
       - grafana_data:/var/lib/grafana
     environment:
